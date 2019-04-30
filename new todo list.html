@@ -1,0 +1,369 @@
+<!-- *************************************************************
++ Description : Todo List
++ Author      : Nabeel tayyab
++ Date        : 24/07/2018
+************************************************************** -->
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Todo List Project</title>
+
+    <style>
+        /* Basic Style */
+
+        nav {
+            height: auto;
+            width: auto;
+            background-color: black;
+            font-size: 30px;
+            color: blueviolet;
+        }
+
+        body {
+            background-image: linear-gradient(rgba(250, 99, 99, .75), rgba(113, 248, 142, 0.75)), url(https://timemanagementninja.com/wp-content/uploads/2013/02/Todos-Non-negotiable.jpg);
+            color: #333;
+            font-family: Lato, sans-serif;
+        }
+
+        .container {
+            display: block;
+            width: auto;
+            border-radius: 5px;
+            background-color: darkslategrey;
+            padding: 25px;
+            margin-left: auto;
+            color: burlywood
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        li * {
+            float: left;
+        }
+
+        #todo {
+            font-size: 35px;
+            margin-left: 50px;
+            font-style: Helvetica;
+            text-align: center;
+        }
+
+        #but {
+            background-color: black;
+            margin-left: 350px;
+            border-radius: 5px;
+            display: block;
+
+        }
+
+        li,
+        h3 {
+            clear: both;
+            list-style: none;
+        }
+
+        button {
+            background-color: black;
+            border-radius: 2px;
+            color: #888;
+            font-size: 15px;
+            width: 60px;
+            margin: 10px 0 0;
+            font-family: Lato, sans-serif;
+            cursor: pointer;
+        }
+
+        button:hover {
+            color: lightgreen;
+        }
+
+        /* Heading */
+
+        h3,
+        label[for='new-task'] {
+            color: khaki;
+            font-weight: 700;
+            font-size: 15px;
+            border-bottom: 2px solid #333;
+            padding: 30px 0 10px;
+            margin: auto;
+            text-transform: uppercase;
+        }
+
+        input[type="text"] {
+            margin: auto;
+            font-size: 18px;
+            line-height: 18px;
+            height: 18px;
+            padding: 10px;
+            border: 1px solid black;
+            background: #fff;
+            border-radius: 6px;
+            font-family: Lato, sans-serif;
+            color: darkslategrey;
+            box-sizing: border-box;
+            display: inline-block;
+        }
+
+        /* New Task */
+
+        label[for='new-task'] {
+            display: block;
+            margin: 0 0 20px;
+        }
+
+        input#new-task {
+            float: left;
+            width: 318px;
+        }
+
+        p>button:hover {
+            color: #0FC57C;
+            /*for add button*/
+        }
+
+        /* Task list */
+
+        li {
+            overflow: hidden;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        li>input[type="checkbox"] {
+            margin: 0 10px;
+            position: relative;
+            top: 15px;
+        }
+
+        li>label {
+            font-size: 18px;
+            line-height: 40px;
+            width: 318px;
+            padding: 0 0 0 11px;
+        }
+
+        li>input[type="text"] {
+            width: 226px;
+            /*for the edit text box*/
+        }
+
+        li>.delete:hover {
+            color: #CF2323;
+        }
+
+        /* Completed */
+
+        #completed-tasks label {
+            text-decoration: line-through;
+            color: lightsalmon;
+        }
+
+        /* Edit Task */
+
+        ul li input[type=text] {
+            display: none;
+        }
+
+        ul li.editMode input[type=text] {
+            display: block;
+        }
+
+        ul li.editMode label {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="#mytask">My Tasks</a>
+                </li>
+            </ul>
+        </nav>
+        <p id=todo> My ToDo List</p>
+    </div>
+    <div class="container">
+        <p>
+            <label for="new-task">Add Item</label>
+            <input id="new-task" type="text">
+            <button id="but">Add</button>
+        </p>
+
+        <h3>Todo</h3>
+        <ul id="incomplete-tasks"></ul>
+
+        <h3>Completed</h3>
+        <ul id="completed-tasks"></ul>
+    </div>
+
+    <script>
+        var arr = [];
+        var taskInput = document.getElementById("new-task");//Add a new task.
+        var addButton = document.getElementsByTagName("button")[0];//first button
+        var incompleteTaskHolder = document.getElementById("incomplete-tasks");//ul of #incomplete-tasks
+        var completedTasksHolder = document.getElementById("completed-tasks");//completed-tasks
+
+
+        //New task list item
+        var createNewTaskElement = function (taskString) {
+
+            var listItem = document.createElement("li");
+
+            //input (checkbox)
+            var checkBox = document.createElement("input");//checkbx
+            //label
+            var label = document.createElement("label");//label
+            //input (text)
+            var editInput = document.createElement("input");//text
+            //button.edit
+            var editButton = document.createElement("button");//edit button
+
+            //button.delete
+            var deleteButton = document.createElement("button");//delete button
+            label.innerText = taskString;
+
+            //Each elements, needs appending
+            checkBox.type = "checkbox";
+            editInput.type = "text";
+
+            editButton.innerText = "Edit";//innerText encodes special characters, HTML does not.
+            editButton.className = "edit";
+            deleteButton.innerText = "Delete";
+            deleteButton.className = "delete";
+
+
+
+            //and appending.
+            listItem.appendChild(checkBox);
+            listItem.appendChild(label);
+            listItem.appendChild(editInput);
+            listItem.appendChild(editButton);
+            listItem.appendChild(deleteButton);
+            return listItem;
+        }
+        window.onload = function () {
+            var list = localStorage.getItem('list');
+            var splitArr = list.split(',');
+            for (var i = 0; i < splitArr.length; i++) {
+                var listItem = createNewTaskElement(splitArr[i]);
+
+                //Append listItem to incompleteTaskHolder
+                incompleteTaskHolder.appendChild(listItem);
+                bindTaskEvents(listItem, taskCompleted);
+            }
+        }
+
+        var input = document.getElementById("new-task");
+        input.addEventListener("keyup", function (event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("but").click();
+            }
+        });
+
+        var addTask = function () {
+            console.log("Add Task...");
+            arr.push(taskInput.value);
+            localStorage.setItem('list', arr);
+            //Create a new list item with the text from the #new-task:
+            var listItem = createNewTaskElement(taskInput.value);
+
+            //Append listItem to incompleteTaskHolder
+            incompleteTaskHolder.appendChild(listItem);
+            bindTaskEvents(listItem, taskCompleted);
+            taskInput.value = "";
+
+        }
+        //Set the click handler to the addTask function.
+        addButton.onclick = addTask;
+
+
+        //Edit an existing task.
+
+        var editTask = function () {
+            console.log("Edit Task...");
+            console.log("Change 'edit' to 'save'");
+            var listItem = this.parentNode;
+            var editInput = listItem.querySelector('input[type=text]');
+            var label = listItem.querySelector("label");
+            var containsClass = listItem.classList.contains("editMode");
+            //If class of the parent is .editmode
+            if (containsClass) {
+
+                //switch to .editmode
+                //label becomes the inputs value.
+                label.innerText = editInput.value;
+            } else {
+                editInput.value = label.innerText;
+            }
+
+            //toggle .editmode on the parent.
+            listItem.classList.toggle("editMode");
+        }
+
+        //Delete task.
+        var deleteTask = function () {
+            console.log("Delete Task...");
+            var listItem = this.parentNode;
+            var ul = listItem.parentNode;
+            //Remove the parent list item from the ul.
+            ul.removeChild(listItem);
+        }
+
+        //Mark task completed
+        var taskCompleted = function () {
+            console.log("Complete Task...");
+
+            //Append the task list item to the #completed-tasks
+            var listItem = this.parentNode;
+            completedTasksHolder.appendChild(listItem);
+            bindTaskEvents(listItem, taskIncomplete);
+
+        }
+
+        var taskIncomplete = function () {
+            console.log("Incomplete Task...");
+            //Mark task as incomplete.
+            //When the checkbox is unchecked
+            //Append the task list item to the #incomplete-tasks.
+            var listItem = this.parentNode;
+            incompleteTaskHolder.appendChild(listItem);
+            bindTaskEvents(listItem, taskCompleted);
+        }
+
+        
+
+        var bindTaskEvents = function (taskListItem, checkBoxEventHandler) {
+            console.log("bind list item events");
+            //select ListItems children
+            var checkBox = taskListItem.querySelector("input[type=checkbox]");
+            var editButton = taskListItem.querySelector("button.edit");
+            var deleteButton = taskListItem.querySelector("button.delete");
+
+
+            //Bind editTask to edit button.
+            editButton.onclick = editTask;
+            //Bind deleteTask to delete button.
+            deleteButton.onclick = deleteTask;
+            //Bind taskCompleted to checkBoxEventHandler.
+            checkBox.onchange = checkBoxEventHandler;
+        }
+    </script>
+
+</body>
+
+</html>
